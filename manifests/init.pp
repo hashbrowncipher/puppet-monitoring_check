@@ -222,11 +222,10 @@ define monitoring_check (
   if str2bool($needs_sudo) {
     validate_re($command, '^/.*', "Your command, ${command}, must use a full path if you are going to use sudo")
     $real_command = "sudo -H -u ${sudo_user} -- ${command}"
-    $cmd = regsubst($command, '^(\S+).*','\1') # Strip the options off, leaving just the check script
     if str2bool($use_sensu) {
       sudo::conf { "sensu_${title}":
         priority => 10,
-        content  => "sensu       ALL=(${sudo_user}) NOPASSWD: ${cmd}\nDefaults!${cmd} !requiretty",
+        content  => "sensu       ALL=(${sudo_user}) NOPASSWD: ${command}\n",
       } ->
       Sensu::Check[$name]
     }
